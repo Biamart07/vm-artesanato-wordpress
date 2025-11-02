@@ -49,38 +49,6 @@
 
         </section>
 
-        <!--Produtos -->
-        <section class="border-b-2 border-dashed border-marrom my-2 flex flex-col items-center py-10" id="produtos">
-
-
-          <h2 class="text-3xl font-titulo text-cinzaescuro dark:text-white text-center"><?php the_field('titulo_produtos'); ?></h2>
-        
-          <div class="flex flex-col gap-15 pt-12 md:grid grid-cols-2 lg:grid-cols-3" data-aos="fade-up" data-aos-duration="1000">
-
-          <?php if( have_rows('produtos') ): ?>
-            <?php while( have_rows('produtos') ) : the_row(); ?>
-        
-              <div class="flex flex-col rounded-xl shadow-md m-5 lg:w-72">
-                <img class='h-48 object-cover rounded-t-[10px] bg-fixed transition duration-300 ease-in-out hover:opacity-80'
-                    src="<?php echo get_sub_field('imagem')['url']; ?>"
-                    alt="imagem de uma necessaire azul escuro">
-                <div class="bg-begefundo rounded-b-xl p-4 text-sm">
-                    <p class="font-texto text-cinzaescuro"><?php the_sub_field('preco'); ?></p>
-                    <p class="font-texto text-cinzaescuro text-base font-medium my-1.5"><?php the_sub_field('titulo'); ?></p>
-                    <p class="font-texto text-cinzaescuro"><?php the_sub_field('texto'); ?></p>
-                    <div class="flex items-center justify-center gap-2 mt-3 mx-3 bg-white/20 rounded-md active:scale-100 hover:scale-105 transition-all duration-300">
-                        <a role="button" href="#" class="no-underline font-semibold text-white text-sm text-center bg-gradient-to-t from-verde to-marrom hover:scale-105 dark:to-marromescuro transition duration-300 h-full w-full rounded py-2">
-                            Comprar
-                        </a>
-                    </div>
-                </div>
-              </div>
-
-            <?php endwhile; ?>
-          <?php endif; ?>
-      
-          </div>
-        </section>
 
         <!--Sobre nós -->
         <section class="border-b-2 border-dashed border-marrom flex flex-col items-center justify-center gap-10 max-md:px-4 md:flex-row py-20" id="sobre">

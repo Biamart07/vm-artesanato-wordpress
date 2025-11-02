@@ -29,7 +29,7 @@
                   <ul class="list-none flex flex-row space-x-6 font-texto text-cinzaescuro font-medium dark:text-white">
                       <li><a class="no-underline text-cinzaescuro hover:text-marromhover dark:text-white dark:hover:text-verde transition-colors duration-300 ease-in-out" href="#inicio">Início</a></li>
                       <li><a class="no-underline text-cinzaescuro hover:text-marromhover dark:text-white dark:hover:text-verde transition-colors duration-300 ease-in-out" href="#categorias">Categorias</a></li>
-                      <li><a class="no-underline text-cinzaescuro hover:text-marromhover dark:text-white dark:hover:text-verde transition-colors duration-300 ease-in-out" href="#produtos">Produtos</a></li>
+                      <li><a class="no-underline text-cinzaescuro hover:text-marromhover dark:text-white dark:hover:text-verde transition-colors duration-300 ease-in-out" href="/produtos">Produtos</a></li>
                       <li><a class="no-underline text-cinzaescuro hover:text-marromhover dark:text-white dark:hover:text-verde transition-colors duration-300 ease-in-out" href="#sobre">Sobre Nós</a></li>
                       <li><a class="no-underline text-cinzaescuro hover:text-marromhover dark:text-white dark:hover:text-verde transition-colors duration-300 ease-in-out" href="#contato">Contato</a></li>
                   </ul>
