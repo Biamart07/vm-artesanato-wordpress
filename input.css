@@ -1,0 +1,15 @@
+@import "tailwindcss";
+@tailwind utilities;
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+    --color-marrom: #be9491;
+    --color-verde: #8A9074;
+    --color-cinzaescuro: #3b3a3a;
+    --color-begefundo: #FDFBF5;
+    --color-marromhover: #99402a;
+    --color-marromescuro: #633327;
+    --font-texto: "Montserrat", sans-serif;
+    --font-titulo: "Cormorant Garamond", serif;
+}
