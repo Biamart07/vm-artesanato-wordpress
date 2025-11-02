@@ -37,4 +37,12 @@ function vm_artesanato_carregar_recursos() {
     );
 }
 
+function custom_search_filter($query) {
+    if ($query->is_search && !is_admin()) {
+        $query->set('post_type', array('post', 'page', 'product'));
+    }
+    return $query;
+}
+add_action('pre_get_posts', 'custom_search_filter');
+
 ?>
