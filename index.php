@@ -101,7 +101,7 @@
                         }
                 ?>
                         <div class="flex flex-col rounded-xl shadow-md m-5 lg:w-72">
-                            <a href="<?php echo esc_url($shop_url); ?>" class="block">
+                            <a href="<?php the_permalink(); ?>" class="block">
                                 <img class='h-48 w-full object-cover rounded-t-[10px] bg-fixed transition duration-300 ease-in-out hover:opacity-80' 
                                      src="<?php echo esc_url(get_the_post_thumbnail_url(get_the_ID(), 'medium')); ?>" 
                                      alt="<?php echo esc_attr(get_the_title()); ?>">
@@ -111,7 +111,7 @@
                                     <?php echo $product->get_price_html(); ?>
                                 </p>
                                 <h3 class="font-texto text-cinzaescuro text-base font-medium my-1.5">
-                                    <a href="<?php echo esc_url($shop_url); ?>" class="no-underline text-cinzaescuro hover:text-marromhover dark:text-white dark:hover:text-verde transition-colors">
+                                    <a href="<?php the_permalink(); ?>" class="no-underline text-cinzaescuro hover:text-marromhover dark:text-white dark:hover:text-verde transition-colors">
                                         <?php the_title(); ?>
                                     </a>
                                 </h3>
