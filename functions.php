@@ -57,4 +57,22 @@ function vm_artesanato_woocommerce_template( $template ) {
 }
 add_filter( 'template_include', 'vm_artesanato_woocommerce_template', 99 );
 
+// Adicionar fragmento do carrinho para atualização AJAX
+function vm_artesanato_add_to_cart_fragments( $fragments ) {
+    $cart_count = WC()->cart->get_cart_contents_count();
+    
+    // Fragmento para o contador do carrinho
+    $fragments['#cart-count'] = '<span id="cart-count" class="ml-2 text-sm font-medium text-cinzaescuro dark:text-white group-hover:text-marromhover dark:group-hover:text-verde transition-colors duration-300 ease-in-out">' . esc_html( $cart_count ) . '</span>';
+    
+    // Fragmento para o badge do carrinho
+    if ( $cart_count > 0 ) {
+        $fragments['#cart-count-badge'] = '<span id="cart-count-badge" class="absolute -top-1 -right-1 bg-verde text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">' . esc_html( $cart_count ) . '</span>';
+    } else {
+        $fragments['#cart-count-badge'] = '';
+    }
+    
+    return $fragments;
+}
+add_filter( 'woocommerce_add_to_cart_fragments', 'vm_artesanato_add_to_cart_fragments' );
+
 ?>

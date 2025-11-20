@@ -125,3 +125,65 @@
 
 
 AOS.init();
+
+// Atualizar contador do carrinho em tempo real usando fragmentos do WooCommerce
+(function() {
+  // Função para atualizar o contador usando os fragmentos do WooCommerce
+  function updateCartFromFragments(fragments) {
+    if (fragments && fragments['#cart-count']) {
+      const cartCountElement = document.getElementById('cart-count');
+      if (cartCountElement) {
+        cartCountElement.outerHTML = fragments['#cart-count'];
+      }
+    }
+    
+    if (fragments && fragments['#cart-count-badge']) {
+      const cartBadgeElement = document.getElementById('cart-count-badge');
+      const cartLink = document.querySelector('a[href*="cart"]');
+      
+      if (fragments['#cart-count-badge']) {
+        if (cartBadgeElement) {
+          cartBadgeElement.outerHTML = fragments['#cart-count-badge'];
+        } else if (cartLink) {
+          // Se o badge não existe, criar um novo
+          const badge = document.createElement('span');
+          badge.id = 'cart-count-badge';
+          badge.className = 'absolute -top-1 -right-1 bg-verde text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center';
+          badge.innerHTML = fragments['#cart-count-badge'].match(/\d+/)[0];
+          cartLink.style.position = 'relative';
+          cartLink.appendChild(badge);
+        }
+      } else {
+        // Remover badge se não houver itens
+        if (cartBadgeElement) {
+          cartBadgeElement.remove();
+        }
+      }
+    }
+  }
+
+  // Interceptar atualizações de fragmentos do WooCommerce
+  if (typeof jQuery !== 'undefined' && jQuery.fn.on) {
+    jQuery(document.body).on('updated_cart_totals updated_wc_div', function() {
+      // O WooCommerce já atualiza os fragmentos automaticamente
+      // Apenas garantir que nosso código está sincronizado
+    });
+    
+    jQuery(document.body).on('added_to_cart', function(event, fragments, cart_hash) {
+      updateCartFromFragments(fragments);
+    });
+  }
+
+  // Atualizar quando a página do carrinho é atualizada
+  if (document.querySelector('.woocommerce-cart-form')) {
+    const updateButton = document.querySelector('button[name="update_cart"]');
+    if (updateButton) {
+      updateButton.addEventListener('click', function() {
+        // O WooCommerce atualizará automaticamente via AJAX
+        setTimeout(function() {
+          location.reload();
+        }, 1000);
+      });
+    }
+  }
+})();

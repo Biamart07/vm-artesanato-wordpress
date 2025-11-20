@@ -26,18 +26,22 @@
                 </a>
 
                 <?php
-                // Buscar a página com o template "Produtos" para o menu desktop
-                $produtos_page_desktop = get_pages(array(
-                    'meta_key' => '_wp_page_template',
-                    'meta_value' => 'page-produtos.php'
-                ));
-                $produtos_url_desktop = !empty($produtos_page_desktop) ? get_permalink($produtos_page_desktop[0]->ID) : home_url('/produtos');
+                // URL da página de loja do WooCommerce
+                $shop_url = function_exists('wc_get_page_permalink') ? wc_get_page_permalink('shop') : null;
+                // Fallback: buscar a página com o template "Produtos"
+                if (!$shop_url) {
+                    $produtos_page = get_pages(array(
+                        'meta_key' => '_wp_page_template',
+                        'meta_value' => 'page-produtos.php'
+                    ));
+                    $shop_url = !empty($produtos_page) ? get_permalink($produtos_page[0]->ID) : home_url('/produtos');
+                }
                 ?>
                 <div class="hidden items-center md:flex md:gap-8 lg:gap-12 mr-20">
                   <ul class="list-none flex flex-row space-x-6 font-texto text-cinzaescuro font-medium dark:text-white">
                       <li><a class="no-underline text-cinzaescuro hover:text-marromhover dark:text-white dark:hover:text-verde transition-colors duration-300 ease-in-out" href="#inicio">Início</a></li>
                       <li><a class="no-underline text-cinzaescuro hover:text-marromhover dark:text-white dark:hover:text-verde transition-colors duration-300 ease-in-out" href="#categorias">Categorias</a></li>
-                      <li><a class="no-underline text-cinzaescuro hover:text-marromhover dark:text-white dark:hover:text-verde transition-colors duration-300 ease-in-out" href="<?php echo esc_url($produtos_url_desktop); ?>">Produtos</a></li>
+                      <li><a class="no-underline text-cinzaescuro hover:text-marromhover dark:text-white dark:hover:text-verde transition-colors duration-300 ease-in-out" href="<?php echo esc_url($shop_url); ?>">Produtos</a></li>
                       <li><a class="no-underline text-cinzaescuro hover:text-marromhover dark:text-white dark:hover:text-verde transition-colors duration-300 ease-in-out" href="#sobre">Sobre Nós</a></li>
                       <li><a class="no-underline text-cinzaescuro hover:text-marromhover dark:text-white dark:hover:text-verde transition-colors duration-300 ease-in-out" href="#contato">Contato</a></li>
                   </ul>
@@ -52,18 +56,10 @@
                 </button>
 
                 <!-- Mobile Menu -->
-                <?php
-                // Buscar a página com o template "Produtos"
-                $produtos_page = get_pages(array(
-                    'meta_key' => '_wp_page_template',
-                    'meta_value' => 'page-produtos.php'
-                ));
-                $produtos_url = !empty($produtos_page) ? get_permalink($produtos_page[0]->ID) : home_url('/produtos');
-                ?>
                 <div id="mobileMenu" aria-hidden="true" class="fixed inset-0 z-50 flex flex-col items-center justify-center gap-6 text-lg font-medium bg-marrom dark:bg-marromescuro md:hidden transition duration-300 translate-x-full">
                   <a href="#inicio">Inicio</a>
                   <a href="#categorias">Categorias</a>
-                  <a href="<?php echo esc_url($produtos_url); ?>">Produtos</a>
+                  <a href="<?php echo esc_url($shop_url); ?>">Produtos</a>
                   <a href="#sobre">Sobre nós</a>
                   <a href="#contato">Contato</a>
                   <button id="closeMenu" aria-label="Fechar menu"
@@ -104,12 +100,36 @@
                       </button>
 
                     <!-- Carrinho -->
+                    <?php
+                    // URL do carrinho - obter ID da página do carrinho do WooCommerce
+                    $cart_url = '#';
+                    $cart_page_id = get_option('woocommerce_cart_page_id');
+                    if ($cart_page_id) {
+                        $cart_url = get_permalink($cart_page_id);
+                    } elseif (function_exists('wc_get_page_id')) {
+                        $cart_page_id = wc_get_page_id('cart');
+                        if ($cart_page_id) {
+                            $cart_url = get_permalink($cart_page_id);
+                        }
+                    } elseif (function_exists('wc_get_cart_url')) {
+                        $cart_url = wc_get_cart_url();
+                    }
+                    
+                    // Contador de itens no carrinho
+                    $cart_count = 0;
+                    if (function_exists('WC') && WC()->cart) {
+                        $cart_count = WC()->cart->get_cart_contents_count();
+                    }
+                    ?>
                     <div class="flow-root lg:ml-6">
-                      <a href="#" class="group -m-2 flex items-center p-2">
+                      <a href="<?php echo esc_url($cart_url); ?>" class="group -m-2 flex items-center p-2 relative">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" data-slot="icon" aria-hidden="true" class="size-6 shrink-0 text-cinzaescuro dark:text-white group-hover:text-marromhover dark:group-hover:text-verde transition-colors duration-300 ease-in-out">
                           <path d="M15.75 10.5V6a3.75 3.75 0 1 0-7.5 0v4.5m11.356-1.993 1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 0 1-1.12-1.243l1.264-12A1.125 1.125 0 0 1 5.513 7.5h12.974c.576 0 1.059.435 1.119 1.007ZM8.625 10.5a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm7.5 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z" stroke-linecap="round" stroke-linejoin="round" />
                         </svg>
-                        <span class="ml-2 text-sm font-medium text-cinzaescuro dark:text-white group-hover:text-marromhover dark:group-hover:text-verde transition-colors duration-300 ease-in-out">0</span>
+                        <?php if ($cart_count > 0) : ?>
+                          <span class="absolute -top-1 -right-1 bg-verde text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center" id="cart-count-badge"><?php echo esc_html($cart_count); ?></span>
+                        <?php endif; ?>
+                        <span class="ml-2 text-sm font-medium text-cinzaescuro dark:text-white group-hover:text-marromhover dark:group-hover:text-verde transition-colors duration-300 ease-in-out" id="cart-count"><?php echo esc_html($cart_count); ?></span>
                         <span class="sr-only">items in cart, view bag</span>
                       </a>
                     </div>
