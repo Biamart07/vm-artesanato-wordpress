@@ -25,11 +25,19 @@
                 <span class="hidden lg:block text-xl font-texto font-semibold text-cinzaescuro dark:text-white">V&M Artesanato</span>
                 </a>
 
+                <?php
+                // Buscar a página com o template "Produtos" para o menu desktop
+                $produtos_page_desktop = get_pages(array(
+                    'meta_key' => '_wp_page_template',
+                    'meta_value' => 'page-produtos.php'
+                ));
+                $produtos_url_desktop = !empty($produtos_page_desktop) ? get_permalink($produtos_page_desktop[0]->ID) : home_url('/produtos');
+                ?>
                 <div class="hidden items-center md:flex md:gap-8 lg:gap-12 mr-20">
                   <ul class="list-none flex flex-row space-x-6 font-texto text-cinzaescuro font-medium dark:text-white">
                       <li><a class="no-underline text-cinzaescuro hover:text-marromhover dark:text-white dark:hover:text-verde transition-colors duration-300 ease-in-out" href="#inicio">Início</a></li>
                       <li><a class="no-underline text-cinzaescuro hover:text-marromhover dark:text-white dark:hover:text-verde transition-colors duration-300 ease-in-out" href="#categorias">Categorias</a></li>
-                      <li><a class="no-underline text-cinzaescuro hover:text-marromhover dark:text-white dark:hover:text-verde transition-colors duration-300 ease-in-out" href="/produtos">Produtos</a></li>
+                      <li><a class="no-underline text-cinzaescuro hover:text-marromhover dark:text-white dark:hover:text-verde transition-colors duration-300 ease-in-out" href="<?php echo esc_url($produtos_url_desktop); ?>">Produtos</a></li>
                       <li><a class="no-underline text-cinzaescuro hover:text-marromhover dark:text-white dark:hover:text-verde transition-colors duration-300 ease-in-out" href="#sobre">Sobre Nós</a></li>
                       <li><a class="no-underline text-cinzaescuro hover:text-marromhover dark:text-white dark:hover:text-verde transition-colors duration-300 ease-in-out" href="#contato">Contato</a></li>
                   </ul>
@@ -44,10 +52,18 @@
                 </button>
 
                 <!-- Mobile Menu -->
+                <?php
+                // Buscar a página com o template "Produtos"
+                $produtos_page = get_pages(array(
+                    'meta_key' => '_wp_page_template',
+                    'meta_value' => 'page-produtos.php'
+                ));
+                $produtos_url = !empty($produtos_page) ? get_permalink($produtos_page[0]->ID) : home_url('/produtos');
+                ?>
                 <div id="mobileMenu" aria-hidden="true" class="fixed inset-0 z-50 flex flex-col items-center justify-center gap-6 text-lg font-medium bg-marrom dark:bg-marromescuro md:hidden transition duration-300 translate-x-full">
                   <a href="#inicio">Inicio</a>
                   <a href="#categorias">Categorias</a>
-                  <a href="#produtos">Produtos</a>
+                  <a href="<?php echo esc_url($produtos_url); ?>">Produtos</a>
                   <a href="#sobre">Sobre nós</a>
                   <a href="#contato">Contato</a>
                   <button id="closeMenu" aria-label="Fechar menu"

@@ -45,4 +45,16 @@ function custom_search_filter($query) {
 }
 add_action('pre_get_posts', 'custom_search_filter');
 
+// Fazer a página de loja usar o template customizado
+function vm_artesanato_woocommerce_template( $template ) {
+    if ( is_shop() ) {
+        $custom_template = locate_template( 'page-produtos.php' );
+        if ( $custom_template ) {
+            return $custom_template;
+        }
+    }
+    return $template;
+}
+add_filter( 'template_include', 'vm_artesanato_woocommerce_template', 99 );
+
 ?>

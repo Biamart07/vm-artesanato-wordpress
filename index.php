@@ -15,7 +15,15 @@
             <p class="text-sm md:text-base font-texto text-cinzaescuro max-w-xl">
             <?php the_field('texto_hero'); ?>
             </p>
-            <a href="#produtos" class="no-underline px-8 py-2.5 mt-4 text-sm bg-gradient-to-r from-verde to-marrom hover:scale-105 dark:to-marromescuro transition duration-300 text-white rounded-full">
+            <?php
+            // Buscar a página com o template "Produtos"
+            $produtos_page = get_pages(array(
+                'meta_key' => '_wp_page_template',
+                'meta_value' => 'page-produtos.php'
+            ));
+            $produtos_url = !empty($produtos_page) ? get_permalink($produtos_page[0]->ID) : home_url('/produtos');
+            ?>
+            <a href="<?php echo esc_url($produtos_url); ?>" class="no-underline px-8 py-2.5 mt-4 text-sm bg-gradient-to-r from-verde to-marrom hover:scale-105 dark:to-marromescuro transition duration-300 text-white rounded-full">
                 <?php the_field('texto_botao_hero'); ?>
             </a>
             
@@ -49,6 +57,95 @@
 
         </section>
 
+        <!-- Preview de Produtos -->
+        <section class="border-b-2 border-dashed border-marrom my-2 flex flex-col items-center py-10" id="produtos-preview">
+            <h2 class="text-3xl font-titulo text-cinzaescuro dark:text-white text-center mb-4"><?php the_field('titulo_produtos'); ?></h2>
+            <div class="h-[3px] w-32 my-1 bg-gradient-to-l from-transparent to-marrom dark:to-marromescuro"></div>
+
+            <?php
+            // URL da página de loja
+            $shop_url = function_exists('wc_get_page_permalink') ? wc_get_page_permalink('shop') : home_url('/');
+            // Buscar a página com o template "Produtos" como fallback
+            if (!$shop_url || $shop_url == home_url('/')) {
+                $produtos_page = get_pages(array(
+                    'meta_key' => '_wp_page_template',
+                    'meta_value' => 'page-produtos.php'
+                ));
+                $shop_url = !empty($produtos_page) ? get_permalink($produtos_page[0]->ID) : home_url('/produtos');
+            }
+            ?>
+
+            <div class="flex flex-col gap-15 pt-12 md:grid grid-cols-2 lg:grid-cols-3 max-w-7xl mx-auto px-4" data-aos="fade-up" data-aos-duration="1000">
+                <?php
+                // Buscar apenas alguns produtos para preview (6 produtos)
+                $args = array(
+                    'post_type' => 'product',
+                    'posts_per_page' => 6,
+                    'orderby' => 'date',
+                    'order' => 'DESC',
+                    'post_status' => 'publish'
+                );
+                $products_preview = new WP_Query($args);
+
+                if ($products_preview->have_posts()) :
+                    while ($products_preview->have_posts()) : $products_preview->the_post();
+                        global $product;
+                        
+                        // Garantir que temos o objeto do produto
+                        if (!$product) {
+                            $product = wc_get_product(get_the_ID());
+                        }
+                        
+                        if (!$product) {
+                            continue;
+                        }
+                ?>
+                        <div class="flex flex-col rounded-xl shadow-md m-5 lg:w-72">
+                            <a href="<?php echo esc_url($shop_url); ?>" class="block">
+                                <img class='h-48 w-full object-cover rounded-t-[10px] bg-fixed transition duration-300 ease-in-out hover:opacity-80' 
+                                     src="<?php echo esc_url(get_the_post_thumbnail_url(get_the_ID(), 'medium')); ?>" 
+                                     alt="<?php echo esc_attr(get_the_title()); ?>">
+                            </a>
+                            <div class="bg-begefundo rounded-b-xl p-4 text-sm">
+                                <p class="font-texto text-cinzaescuro text-lg font-semibold mb-2">
+                                    <?php echo $product->get_price_html(); ?>
+                                </p>
+                                <h3 class="font-texto text-cinzaescuro text-base font-medium my-1.5">
+                                    <a href="<?php echo esc_url($shop_url); ?>" class="no-underline text-cinzaescuro hover:text-marromhover dark:text-white dark:hover:text-verde transition-colors">
+                                        <?php the_title(); ?>
+                                    </a>
+                                </h3>
+                                <p class="font-texto text-cinzaescuro line-clamp-2">
+                                    <?php echo wp_trim_words(get_the_excerpt() ? get_the_excerpt() : get_the_content(), 15, '...'); ?>
+                                </p>
+                                <div class="flex items-center justify-center gap-2 mt-3 mx-3 bg-white/20 rounded-md active:scale-100 hover:scale-105 transition-all duration-300">
+                                    <?php
+                                    $add_to_cart_url = $product->add_to_cart_url();
+                                    $add_to_cart_text = $product->add_to_cart_text();
+                                    ?>
+                                    <a role="button" href="<?php echo esc_url($add_to_cart_url); ?>" 
+                                       class="no-underline font-semibold text-white text-sm text-center bg-gradient-to-t from-verde to-marrom hover:scale-105 dark:to-marromescuro transition duration-300 h-full w-full rounded py-2">
+                                        <?php echo esc_html($add_to_cart_text); ?>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                <?php
+                    endwhile;
+                    wp_reset_postdata();
+                else :
+                    echo '<p class="col-span-full text-center text-cinzaescuro dark:text-white">Nenhum produto encontrado.</p>';
+                endif;
+                ?>
+            </div>
+
+            <!-- Botão para ver todos os produtos -->
+            <div class="mt-8">
+                <a href="<?php echo esc_url($shop_url); ?>" class="no-underline px-8 py-2.5 text-sm bg-gradient-to-r from-verde to-marrom hover:scale-105 dark:to-marromescuro transition duration-300 text-white rounded-full">
+                    Ver Todos os Produtos
+                </a>
+            </div>
+        </section>
 
         <!--Sobre nós -->
         <section class="border-b-2 border-dashed border-marrom flex flex-col items-center justify-center gap-10 max-md:px-4 md:flex-row py-20" id="sobre">
