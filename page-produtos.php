@@ -1,11 +1,13 @@
 <?php
-/*
-Template Name: Produtos
-*/
+/**
+ * Template Name: Produtos
+ * Template para página de loja do WooCommerce
+ * Este template será usado automaticamente quando is_shop() for true
+ */
 get_header(); ?>
 
 <main>
-    <section class="border-b-2 border-dashed border-marrom my-2 flex flex-col items-center py-10" id="produtos">
+    <section class="border-y-2 border-dashed border-marrom flex flex-col items-center py-10" id="produtos">
         <?php
         // Verificar se é página de loja do WooCommerce ou página normal
         if (function_exists('is_shop') && is_shop()) {
@@ -21,33 +23,61 @@ get_header(); ?>
 
         <?php
         // URL da página de loja para o formulário de busca e links dos produtos
-        $shop_url = wc_get_page_permalink('shop') ? wc_get_page_permalink('shop') : home_url('/');
+        $shop_url = vm_artesanato_get_shop_url();
         ?>
-        <form role="search" method="get" class="search-form mt-4" action="<?php echo esc_url($shop_url); ?>">
-            <label>
+        <form role="search" method="get" class="search-form mt-6 mb-4 flex flex-col md:flex-row items-stretch justify-center gap-7 max-w-2xl mx-auto px-4 w-full" action="<?php echo esc_url($shop_url); ?>">
+            <label class="flex-1 min-w-0">
                 <span class="screen-reader-text">Buscar produtos:</span>
-                <input type="search" class="search-field px-4 py-2 rounded-md border border-marrom" placeholder="Buscar produtos..." value="<?php echo esc_attr(get_search_query()); ?>" name="s" />
+                <input 
+                    type="search" 
+                    class="search-field w-full h-full px-4 py-3 rounded-full border-2 border-marrom/30 dark:border-marrom/50 bg-begefundo dark:bg-marromescuro/50 text-cinzaescuro dark:text-white placeholder:text-marrom/50 dark:placeholder:text-marrom/60 focus:outline-none focus:ring-2 focus:ring-marrom dark:focus:ring-verde focus:border-marrom dark:focus:border-verde transition-all duration-300 font-texto text-sm sm:text-base shadow-sm hover:shadow-md" 
+                    placeholder="Buscar produtos..." 
+                    value="<?php echo esc_attr(get_search_query()); ?>" 
+                    name="s"
+                    autocomplete="off"
+                />
             </label>
-            <input type="submit" class="search-submit px-6 py-2 bg-gradient-to-r from-verde to-marrom text-white rounded-md hover:scale-105 transition duration-300 cursor-pointer" value="Buscar" />
+            <button 
+                type="submit" 
+                class="search-submit px-8 py-3 bg-gradient-to-r from-verde to-marrom dark:from-verde dark:to-marromescuro text-white rounded-full hover:scale-105 active:scale-95 transition-all duration-300 cursor-pointer font-texto font-medium text-sm sm:text-base shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-marrom focus:ring-offset-2 dark:focus:ring-verde whitespace-nowrap shrink-0"
+            >
+                Buscar
+            </button>
         </form>
 
         <div class="flex flex-col gap-15 pt-12 md:grid grid-cols-2 lg:grid-cols-3 max-w-7xl mx-auto px-4" data-aos="fade-up" data-aos-duration="1000">
             <?php
-            // Verificar se há busca
-            $search_query = isset($_GET['s']) ? sanitize_text_field($_GET['s']) : '';
+            global $wp_query;
             
-            $args = array(
-                'post_type' => 'product',
-                'posts_per_page' => -1,
-                'post_status' => 'publish'
-            );
-            
-            // Adicionar busca se houver termo de pesquisa
-            if (!empty($search_query)) {
-                $args['s'] = $search_query;
+            // Usar a query principal do WooCommerce se estiver na página de loja
+            if (is_shop() && isset($wp_query) && $wp_query->is_main_query() && $wp_query->have_posts()) {
+                // A query já está configurada pelo WooCommerce
+                $products_query = $wp_query;
+            } else {
+                // Para outras páginas, criar query customizada
+                $search_query = isset($_GET['s']) ? sanitize_text_field($_GET['s']) : '';
+                
+                // Otimizar consulta: limitar produtos e usar paginação
+                $paged = (get_query_var('paged')) ? get_query_var('paged') : 1;
+                $args = array(
+                    'post_type' => 'product',
+                    'posts_per_page' => 12, // Limitar a 12 produtos por página (CRÍTICO para performance)
+                    'paged' => $paged,
+                    'post_status' => 'publish',
+                    'no_found_rows' => false, // Permitir paginação
+                    'update_post_meta_cache' => true, // Cache de meta (reduz consultas N+1)
+                    'update_post_term_cache' => true, // Cache de termos (reduz consultas N+1)
+                    'orderby' => 'date',
+                    'order' => 'DESC'
+                );
+                
+                // Adicionar busca se houver termo de pesquisa
+                if (!empty($search_query)) {
+                    $args['s'] = $search_query;
+                }
+                
+                $products_query = new WP_Query($args);
             }
-            
-            $products_query = new WP_Query($args);
 
             if ($products_query->have_posts()) :
                 while ($products_query->have_posts()) : $products_query->the_post();
@@ -95,10 +125,30 @@ get_header(); ?>
             <?php
                 endwhile;
                 wp_reset_postdata();
-            else :
-                echo '<p class="col-span-full text-center text-cinzaescuro dark:text-white py-8">Nenhum produto encontrado.</p>';
-            endif;
-            ?>
+                
+                // Paginação
+                if ($products_query->max_num_pages > 1) {
+                    echo '<div class="col-span-full flex justify-center mt-8 gap-2">';
+                    if (is_shop() && isset($wp_query) && $wp_query->is_main_query()) {
+                        // Usar paginação do WooCommerce
+                        woocommerce_pagination();
+                    } else {
+                        // Paginação customizada
+                        $paged = (get_query_var('paged')) ? get_query_var('paged') : 1;
+                        echo paginate_links(array(
+                            'total' => $products_query->max_num_pages,
+                            'current' => $paged,
+                            'prev_text' => '&laquo; Anterior',
+                            'next_text' => 'Próxima &raquo;',
+                            'class' => 'flex gap-2'
+                        ));
+                    }
+                    echo '</div>';
+                }
+                ?>
+            <?php else : ?>
+                <p class="col-span-full text-center text-cinzaescuro dark:text-white py-8">Nenhum produto encontrado.</p>
+            <?php endif; ?>
         </div>
     </section>
 </main>

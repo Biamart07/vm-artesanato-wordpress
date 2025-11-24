@@ -9,7 +9,7 @@ defined( 'ABSPATH' ) || exit;
 
 do_action( 'woocommerce_before_cart' ); ?>
 
-<section class="border-b-2 border-dashed border-marrom my-2 flex flex-col items-center py-10 min-h-screen" id="carrinho">
+<section class="border-b-2 border-dashed border-marrom flex flex-col items-center py-10 min-h-screen" id="carrinho">
         <h2 class="text-3xl font-titulo text-cinzaescuro dark:text-white text-center mb-4">Carrinho de Compras</h2>
         <div class="h-[3px] w-32 my-1 bg-gradient-to-l from-transparent to-marrom dark:to-marromescuro"></div>
 
@@ -137,8 +137,8 @@ do_action( 'woocommerce_before_cart' ); ?>
                             <?php if ( wc_coupons_enabled() ) { ?>
                                 <div class="coupon flex flex-col md:flex-row gap-4 mb-4">
                                     <label for="coupon_code" class="screen-reader-text"><?php esc_html_e( 'Coupon:', 'woocommerce' ); ?></label>
-                                    <input type="text" name="coupon_code" class="input-text px-4 py-2 border border-marrom rounded-md" id="coupon_code" value="" placeholder="<?php esc_attr_e( 'Coupon code', 'woocommerce' ); ?>" />
-                                    <button type="submit" class="button<?php echo esc_attr( wc_wp_theme_get_element_class_name( 'button' ) ? ' ' . wc_wp_theme_get_element_class_name( 'button' ) : '' ); ?>" name="apply_coupon" value="<?php esc_attr_e( 'Apply coupon', 'woocommerce' ); ?>"><?php esc_html_e( 'Apply coupon', 'woocommerce' ); ?></button>
+                                    <input type="text" name="coupon_code" class="input-text px-4 py-2 border border-marrom dark:border-verde rounded-md bg-white dark:bg-marromescuro text-cinzaescuro dark:text-white placeholder:text-cinzaescuro/60 dark:placeholder:text-white/60" id="coupon_code" value="" placeholder="<?php esc_attr_e( 'Coupon code', 'woocommerce' ); ?>" />
+                                    <button type="submit" class="button<?php echo esc_attr( wc_wp_theme_get_element_class_name( 'button' ) ? ' ' . wc_wp_theme_get_element_class_name( 'button' ) : '' ); ?> text-cinzaescuro dark:text-white bg-begefundo dark:bg-marromescuro border border-marrom dark:border-verde hover:bg-marromhover dark:hover:bg-verde px-6 py-2 rounded-full transition-colors duration-300" name="apply_coupon" value="<?php esc_attr_e( 'Apply coupon', 'woocommerce' ); ?>"><?php esc_html_e( 'Apply coupon', 'woocommerce' ); ?></button>
                                     <?php do_action( 'woocommerce_cart_coupon' ); ?>
                                 </div>
                             <?php } ?>

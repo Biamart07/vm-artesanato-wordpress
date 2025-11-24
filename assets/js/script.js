@@ -136,30 +136,6 @@ AOS.init();
         cartCountElement.outerHTML = fragments['#cart-count'];
       }
     }
-    
-    if (fragments && fragments['#cart-count-badge']) {
-      const cartBadgeElement = document.getElementById('cart-count-badge');
-      const cartLink = document.querySelector('a[href*="cart"]');
-      
-      if (fragments['#cart-count-badge']) {
-        if (cartBadgeElement) {
-          cartBadgeElement.outerHTML = fragments['#cart-count-badge'];
-        } else if (cartLink) {
-          // Se o badge não existe, criar um novo
-          const badge = document.createElement('span');
-          badge.id = 'cart-count-badge';
-          badge.className = 'absolute -top-1 -right-1 bg-verde text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center';
-          badge.innerHTML = fragments['#cart-count-badge'].match(/\d+/)[0];
-          cartLink.style.position = 'relative';
-          cartLink.appendChild(badge);
-        }
-      } else {
-        // Remover badge se não houver itens
-        if (cartBadgeElement) {
-          cartBadgeElement.remove();
-        }
-      }
-    }
   }
 
   // Interceptar atualizações de fragmentos do WooCommerce

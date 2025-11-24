@@ -16,12 +16,8 @@
             <?php the_field('texto_hero'); ?>
             </p>
             <?php
-            // Buscar a página com o template "Produtos"
-            $produtos_page = get_pages(array(
-                'meta_key' => '_wp_page_template',
-                'meta_value' => 'page-produtos.php'
-            ));
-            $produtos_url = !empty($produtos_page) ? get_permalink($produtos_page[0]->ID) : home_url('/produtos');
+            // URL da página de loja do WooCommerce
+            $produtos_url = vm_artesanato_get_shop_url();
             ?>
             <a href="<?php echo esc_url($produtos_url); ?>" class="no-underline px-8 py-2.5 mt-4 text-sm bg-gradient-to-r from-verde to-marrom hover:scale-105 dark:to-marromescuro transition duration-300 text-white rounded-full">
                 <?php the_field('texto_botao_hero'); ?>
@@ -58,32 +54,27 @@
         </section>
 
         <!-- Preview de Produtos -->
-        <section class="border-b-2 border-dashed border-marrom my-2 flex flex-col items-center py-10" id="produtos-preview">
+        <section class="border-b-2 border-dashed border-marrom flex flex-col items-center py-10" id="produtos-preview">
             <h2 class="text-3xl font-titulo text-cinzaescuro dark:text-white text-center mb-4"><?php the_field('titulo_produtos'); ?></h2>
             <div class="h-[3px] w-32 my-1 bg-gradient-to-l from-transparent to-marrom dark:to-marromescuro"></div>
 
             <?php
-            // URL da página de loja
-            $shop_url = function_exists('wc_get_page_permalink') ? wc_get_page_permalink('shop') : home_url('/');
-            // Buscar a página com o template "Produtos" como fallback
-            if (!$shop_url || $shop_url == home_url('/')) {
-                $produtos_page = get_pages(array(
-                    'meta_key' => '_wp_page_template',
-                    'meta_value' => 'page-produtos.php'
-                ));
-                $shop_url = !empty($produtos_page) ? get_permalink($produtos_page[0]->ID) : home_url('/produtos');
-            }
+            // URL da página de loja do WooCommerce
+            $shop_url = vm_artesanato_get_shop_url();
             ?>
 
             <div class="flex flex-col gap-15 pt-12 md:grid grid-cols-2 lg:grid-cols-3 max-w-7xl mx-auto px-4" data-aos="fade-up" data-aos-duration="1000">
                 <?php
-                // Buscar apenas alguns produtos para preview (6 produtos)
+                // Buscar apenas alguns produtos para preview (6 produtos) - OTIMIZADO
                 $args = array(
                     'post_type' => 'product',
                     'posts_per_page' => 6,
                     'orderby' => 'date',
                     'order' => 'DESC',
-                    'post_status' => 'publish'
+                    'post_status' => 'publish',
+                    'update_post_meta_cache' => true, // Cache de meta
+                    'update_post_term_cache' => true, // Cache de termos
+                    'no_found_rows' => true // Não contar total (mais rápido para preview)
                 );
                 $products_preview = new WP_Query($args);
 
